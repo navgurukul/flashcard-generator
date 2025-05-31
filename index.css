@@ -215,4 +215,99 @@ footer {
   border-top: 1px solid light-dark(var(--light-border), var(--dark-border));
   color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
   font-size: 0.9em;
+
+/* API Key Section Styling */
+.api-key-section {
+  background-color: light-dark(var(--light-bg), var(--dark-card-bg));
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+}
+
+.api-key-section h2 {
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.api-key-info {
+  font-size: 0.95em;
+  margin-bottom: 20px;
+}
+
+.api-key-info a {
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.api-key-info a:hover {
+  text-decoration: underline;
+}
+
+.input-group {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 8px 0 0 8px;
+  font-size: 16px;
+  background-color: light-dark(var(--light-surface), var(--dark-surface));
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: light-dark(var(--light-primary), var(--dark-primary));
+  box-shadow: 0 0 0 2px light-dark(var(--light-focus-shadow-color), var(--dark-focus-shadow-color));
+}
+
+.icon-button {
+  background-color: light-dark(var(--light-bg), var(--dark-card-bg));
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  padding: 0 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.icon-button:hover {
+  background-color: light-dark(var(--light-border), var(--dark-border));
+}
+
+.status-message {
+  min-height: 20px;
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: light-dark(var(--light-error), var(--dark-error));
+  transition: opacity 0.3s ease;
+}
+
+.status-message.success {
+  color: #34a853; /* Google green color */
+}
+
+#saveApiKeyBtn {
+  background-color: light-dark(var(--light-primary), var(--dark-primary));
+  padding: 10px 20px;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Add a divider between sections */
+#generatorSection {
+  border-top: 1px solid light-dark(var(--light-border), var(--dark-border));
+  padding-top: 30px;
+  margin-top: 10px;
 }

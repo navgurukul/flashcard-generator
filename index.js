@@ -8,15 +8,47 @@ const topicInput = document.getElementById('topicInput');
 const generateButton = document.getElementById('generateButton');
 const flashcardsContainer = document.getElementById('flashcardsContainer');
 const errorMessage = document.getElementById('errorMessage');
+const apiKeyInput = document.getElementById('apiKeyInput');
+const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+const apiKeyStatus = document.getElementById('apiKeyStatus');
+const toggleVisibilityBtn = document.getElementById('toggleVisibilityBtn');
 
-// API key for Gemini
-const API_KEY = 'AIzaSyBz7Lz5UDNXWkdrQOrvOJy0BcZkCqro-Qs';
+// Function to get API key - either from input or localStorage
+function getApiKey() {
+  // Try to get from input field
+  const inputKey = apiKeyInput?.value?.trim();
+  
+  // If input has a value, save it to localStorage and return it
+  if (inputKey) {
+    localStorage.setItem('gemini_api_key', inputKey);
+    return inputKey;
+  }
+  
+  // Otherwise try to get from localStorage
+  const savedKey = localStorage.getItem('gemini_api_key');
+  
+  // If we have a saved key, populate the input field and return it
+  if (savedKey && apiKeyInput) {
+    apiKeyInput.value = savedKey;
+    return savedKey;
+  }
+  
+  return ''; // Return empty string if no key is found
+}
 
 // Function to generate flashcards
 generateButton.addEventListener('click', async () => {
   const topic = topicInput.value.trim();
   if (!topic) {
     errorMessage.textContent = 'Please enter a topic or some terms and definitions.';
+    flashcardsContainer.textContent = '';
+    return;
+  }
+  
+  // Get API key
+  const API_KEY = getApiKey();
+  if (!API_KEY) {
+    errorMessage.textContent = 'Please enter your Gemini API key.';
     flashcardsContainer.textContent = '';
     return;
   }
@@ -124,4 +156,29 @@ generateButton.addEventListener('click', async () => {
   } finally {
     generateButton.disabled = false; // Re-enable button
   }
+});
+
+// Save API key button functionality
+saveApiKeyBtn.addEventListener('click', () => {
+  const apiKey = getApiKey();
+  if (apiKey) {
+    apiKeyStatus.textContent = 'API key saved successfully!';
+    apiKeyStatus.classList.add('success');
+  } else {
+    apiKeyStatus.textContent = 'Failed to save API key. Please try again.';
+    apiKeyStatus.classList.remove('success');
+  }
+
+  // Hide status message after 3 seconds
+  setTimeout(() => {
+    apiKeyStatus.textContent = '';
+    apiKeyStatus.classList.remove('success');
+  }, 3000);
+});
+
+// Toggle API key visibility
+toggleVisibilityBtn.addEventListener('click', () => {
+  const type = apiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  apiKeyInput.setAttribute('type', type);
+  toggleVisibilityBtn.textContent = type === 'password' ? 'Show' : 'Hide';
 });
