@@ -215,6 +215,7 @@ footer {
   border-top: 1px solid light-dark(var(--light-border), var(--dark-border));
   color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
   font-size: 0.9em;
+} 
 
 /* API Key Section Styling */
 .api-key-section {
