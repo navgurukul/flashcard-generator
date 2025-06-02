@@ -17,22 +17,22 @@ const toggleVisibilityBtn = document.getElementById('toggleVisibilityBtn');
 function getApiKey() {
   // Try to get from input field
   const inputKey = apiKeyInput?.value?.trim();
-  
+
   // If input has a value, save it to localStorage and return it
   if (inputKey) {
     localStorage.setItem('gemini_api_key', inputKey);
     return inputKey;
   }
-  
+
   // Otherwise try to get from localStorage
   const savedKey = localStorage.getItem('gemini_api_key');
-  
+
   // If we have a saved key, populate the input field and return it
   if (savedKey && apiKeyInput) {
     apiKeyInput.value = savedKey;
     return savedKey;
   }
-  
+
   return ''; // Return empty string if no key is found
 }
 
@@ -44,7 +44,7 @@ generateButton.addEventListener('click', async () => {
     flashcardsContainer.textContent = '';
     return;
   }
-  
+
   // Get API key
   const API_KEY = getApiKey();
   if (!API_KEY) {
@@ -61,10 +61,10 @@ generateButton.addEventListener('click', async () => {
     const prompt = `Generate a list of flashcards for the topic of "${topic}". Each flashcard should have a term and a concise definition. Format the output as a list of "Term: Definition" pairs, with each pair on a new line. Ensure terms and definitions are distinct and clearly separated by a single colon. Here's an example output:
     Hello: Hola
     Goodbye: Adiós`;
-    
+
     // Direct API URL using fetch instead of the Google GenAI package
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-    
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -82,7 +82,7 @@ generateButton.addEventListener('click', async () => {
     });
 
     const data = await response.json();
-    
+
     // Extract text from the API response
     const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
@@ -97,12 +97,13 @@ generateButton.addEventListener('click', async () => {
             const term = parts[0].trim();
             const definition = parts.slice(1).join(':').trim(); // Join remaining parts for definition
             if (definition) {
-              return {term, definition};
+              return { term, definition };
             }
           }
           return null; // Return null for invalid lines
         })
         .filter(card => card !== null); // Filter out nulls
+
 
       if (flashcards.length > 0) {
         errorMessage.textContent = '';
@@ -129,18 +130,66 @@ generateButton.addEventListener('click', async () => {
           definitionDiv.classList.add('definition');
           definitionDiv.textContent = flashcard.definition;
 
+
+          const doneCircleElement = document.createElement('div');
+          doneCircleElement.classList.add('done-circle');
+          doneCircleElement.title = 'Mark as done';
+
+          const checkIconElement = document.createElement('i');
+          checkIconElement.classList.add('fa-solid', 'fa-check');
+          checkIconElement.style.color = 'white';
+          checkIconElement.style.display = 'none';
+
+          doneCircleElement.appendChild(checkIconElement);
+
+
+
+          doneCircleElement.addEventListener('click', e => {
+            e.stopPropagation();
+
+            const isDone = checkIconElement.style.display === 'block';
+
+            if (isDone) {
+              doneCircleElement.style.backgroundColor = '';
+              checkIconElement.style.display = 'none';
+              cardElement.style.borderColor = '';
+            } else {
+              doneCircleElement.style.backgroundColor = '#28a745';
+              checkIconElement.style.display = 'block';
+              cardElement.style.borderColor = '#28a745';
+            }
+          });
+
+
+
           cardFront.appendChild(termDiv);
           cardBack.appendChild(definitionDiv);
           cardInner.appendChild(cardFront);
           cardInner.appendChild(cardBack);
           cardDiv.appendChild(cardInner);
+          cardFront.appendChild(doneCircleElement);
+
 
           flashcardsContainer.appendChild(cardDiv);
 
           // Add click listener to toggle the 'flipped' class
           cardDiv.addEventListener('click', () => {
+            const allCards = document.querySelectorAll('.flashcard');
+            allCards.forEach(card => {
+              if (card !== cardDiv) {
+                card.classList.remove('flipped');
+              }
+            });
+
             cardDiv.classList.toggle('flipped');
+
+
+
           });
+
+
+
+
         });
       } else {
         errorMessage.textContent = 'No valid flashcards could be generated from the response. Please check the format.';
