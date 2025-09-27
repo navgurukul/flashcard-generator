@@ -22,7 +22,7 @@ vi.mock('../hooks/useFlashcards', () => ({
     error: '',
     generateFlashcards: mockGenerateFlashcards,
     isCompleted: vi.fn(() => false),
-    toggleCompleted: vi.fn()
+    markAsCompleted: vi.fn()
   })
 }));
 

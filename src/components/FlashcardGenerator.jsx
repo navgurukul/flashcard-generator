@@ -5,7 +5,7 @@ import { useFlashcards } from '../hooks/useFlashcards';
 export const FlashcardGenerator = () => {
   const [topic, setTopic] = useState('');
   const { getApiKey } = useApiKey();
-  const { flashcards, isGenerating, error, generateFlashcards, isCompleted, toggleCompleted } = useFlashcards();
+  const { flashcards, isGenerating, error, generateFlashcards, isCompleted, markAsCompleted } = useFlashcards();
 
   const handleGenerate = () => {
     const apiKey = getApiKey();
@@ -38,7 +38,7 @@ export const FlashcardGenerator = () => {
             flashcard={flashcard} 
             index={index} 
             isCompleted={isCompleted(flashcard)}
-            onToggleCompleted={() => toggleCompleted(flashcard)}
+            onMarkCompleted={() => markAsCompleted(flashcard)}
           />
         ))}
       </div>
@@ -46,20 +46,17 @@ export const FlashcardGenerator = () => {
   );
 };
 
-const FlashcardComponent = ({ flashcard, index, isCompleted, onToggleCompleted }) => {
+const FlashcardComponent = ({ flashcard, index, isCompleted, onMarkCompleted }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleClick = (e) => {
-    // Don't flip if clicking on the completion checkbox
-    if (e.target.classList.contains('completion-checkbox')) {
-      return;
-    }
+  const handleClick = () => {
+    const wasFlipped = isFlipped;
     setIsFlipped(!isFlipped);
-  };
-
-  const handleCompletionClick = (e) => {
-    e.stopPropagation();
-    onToggleCompleted();
+    
+    // Mark as completed when flipped for the first time
+    if (!wasFlipped && !isFlipped && !isCompleted) {
+      onMarkCompleted();
+    }
   };
 
   return (
@@ -69,14 +66,9 @@ const FlashcardComponent = ({ flashcard, index, isCompleted, onToggleCompleted }
       data-index={index}
     >
       <div className="completion-indicator">
-        <button 
-          className="completion-checkbox"
-          onClick={handleCompletionClick}
-          aria-label={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
-          title={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
-        >
+        <div className="completion-checkbox">
           {isCompleted ? '✓' : '○'}
-        </button>
+        </div>
       </div>
       <div className="flashcard-inner">
         <div className="flashcard-front">

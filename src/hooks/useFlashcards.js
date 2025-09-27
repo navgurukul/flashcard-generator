@@ -113,26 +113,9 @@ export const useFlashcards = () => {
     setCompletedFlashcards(prev => new Set([...prev, id]));
   };
 
-  const markAsIncomplete = (flashcard) => {
-    const id = getFlashcardId(flashcard);
-    setCompletedFlashcards(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
-  };
-
   const isCompleted = (flashcard) => {
     const id = getFlashcardId(flashcard);
     return completedFlashcards.has(id);
-  };
-
-  const toggleCompleted = (flashcard) => {
-    if (isCompleted(flashcard)) {
-      markAsIncomplete(flashcard);
-    } else {
-      markAsCompleted(flashcard);
-    }
   };
 
   return {
@@ -142,8 +125,6 @@ export const useFlashcards = () => {
     generateFlashcards,
     clearFlashcards,
     markAsCompleted,
-    markAsIncomplete,
-    isCompleted,
-    toggleCompleted
+    isCompleted
   };
 };

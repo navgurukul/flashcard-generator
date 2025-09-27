@@ -211,7 +211,6 @@ button:disabled {
   border-radius: 50%;
   width: 24px;
   height: 24px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,12 +218,10 @@ button:disabled {
   font-weight: bold;
   transition: all 0.2s ease;
   color: light-dark(var(--light-success), var(--dark-success));
+  pointer-events: none; /* Make it non-interactive */
 }
 
-.completion-checkbox:hover {
-  border-color: light-dark(var(--light-success), var(--dark-success));
-  transform: scale(1.1);
-}
+/* Removed hover effect since it's no longer interactive */
 
 .flashcard.completed .completion-checkbox {
   background: light-dark(var(--light-success), var(--dark-success));
