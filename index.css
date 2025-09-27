@@ -314,6 +314,11 @@ footer {
 }
 
 
+#theme-icon {
+  height: 50px;
+}
+
+
 .done-circle {
   position: absolute;
   top: 12px;
