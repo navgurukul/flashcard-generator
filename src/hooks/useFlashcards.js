@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LLMServiceFactory } from '../services/llm/index.js';
+import { getDefaultLLMService } from '../config/llm.js';
 
 export const useFlashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
@@ -34,7 +35,7 @@ export const useFlashcards = () => {
       .filter(card => card !== null); // Filter out nulls
   };
 
-  const generateFlashcards = async (topic, apiKey, serviceType = 'gemini') => {
+  const generateFlashcards = async (topic, apiKey, serviceType = getDefaultLLMService()) => {
     if (!topic.trim()) {
       setError('Please enter a topic or some terms and definitions.');
       return;
