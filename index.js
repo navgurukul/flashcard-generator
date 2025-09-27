@@ -172,24 +172,40 @@ generateButton.addEventListener('click', async () => {
 
           flashcardsContainer.appendChild(cardDiv);
 
-          // Add click listener to toggle the 'flipped' class
-          cardDiv.addEventListener('click', () => {
-            const allCards = document.querySelectorAll('.flashcard');
-            allCards.forEach(card => {
-              if (card !== cardDiv) {
-                card.classList.remove('flipped');
-              }
-            });
-
-            cardDiv.classList.toggle('flipped');
+          // No per-card click listener; handled by event delegation below
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        });
+        // Add event delegation for flipping cards
+        flashcardsContainer.addEventListener('click', function(e) {
+          // Find the closest .flashcard ancestor of the click target
+          const cardDiv = e.target.closest('.flashcard');
+          // Ignore clicks outside a card
+          if (!cardDiv || !flashcardsContainer.contains(cardDiv)) return;
+          // Remove 'flipped' from all other cards
+          const allCards = flashcardsContainer.querySelectorAll('.flashcard');
+          allCards.forEach(card => {
+            if (card !== cardDiv) {
+              card.classList.remove('flipped');
+            }
           });
-
-
-
-
+          // Toggle 'flipped' on the clicked card
+          cardDiv.classList.toggle('flipped');
         });
       } else {
         errorMessage.textContent = 'No valid flashcards could be generated from the response. Please check the format.';
