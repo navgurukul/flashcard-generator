@@ -43,7 +43,9 @@ function getApiKey() {
   }
 
   // Otherwise try to get from localStorage
+
   const savedKey = localStorage.getItem("gemini_api_key");
+
 
   // If we have a saved key, populate the input field and return it
   if (savedKey && apiKeyInput) {
@@ -51,7 +53,9 @@ function getApiKey() {
     return savedKey;
   }
 
+
   return ""; // Return empty string if no key is found
+
 }
 
 // Function to generate flashcards
@@ -121,6 +125,7 @@ generateButton.addEventListener("click", async () => {
         })
         .filter((card) => card !== null); // Filter out nulls
 
+
       if (flashcards.length > 0) {
         errorMessage.textContent = "";
         flashcards.forEach((flashcard, index) => {
@@ -146,18 +151,67 @@ generateButton.addEventListener("click", async () => {
           definitionDiv.classList.add("definition");
           definitionDiv.textContent = flashcard.definition;
 
+
+          const doneCircleElement = document.createElement('div');
+          doneCircleElement.classList.add('done-circle');
+          doneCircleElement.title = 'Mark as done';
+
+          const checkIconElement = document.createElement('i');
+          checkIconElement.classList.add('fa-solid', 'fa-check');
+          checkIconElement.style.color = 'white';
+          checkIconElement.style.display = 'none';
+
+          doneCircleElement.appendChild(checkIconElement);
+
+
+
+          doneCircleElement.addEventListener('click', e => {
+            e.stopPropagation();
+
+            const isDone = checkIconElement.style.display === 'block';
+
+            if (isDone) {
+              doneCircleElement.style.backgroundColor = '';
+              checkIconElement.style.display = 'none';
+              cardElement.style.borderColor = '';
+            } else {
+              doneCircleElement.style.backgroundColor = '#28a745';
+              checkIconElement.style.display = 'block';
+              cardElement.style.borderColor = '#28a745';
+            }
+          });
+
+
+
           cardFront.appendChild(termDiv);
           cardBack.appendChild(definitionDiv);
           cardInner.appendChild(cardFront);
           cardInner.appendChild(cardBack);
           cardDiv.appendChild(cardInner);
+          cardFront.appendChild(doneCircleElement);
+
 
           flashcardsContainer.appendChild(cardDiv);
 
-          // Add click listener to toggle the 'flipped' class
-          cardDiv.addEventListener("click", () => {
-            cardDiv.classList.toggle("flipped");
+
+          // No per-card click listener; handled by event delegation below
+        });
+        // Add event delegation for flipping cards
+        flashcardsContainer.addEventListener('click', function(e) {
+          // Find the closest .flashcard ancestor of the click target
+          const cardDiv = e.target.closest('.flashcard');
+          // Ignore clicks outside a card
+          if (!cardDiv || !flashcardsContainer.contains(cardDiv)) return;
+          // Remove 'flipped' from all other cards
+          const allCards = flashcardsContainer.querySelectorAll('.flashcard');
+          allCards.forEach(card => {
+            if (card !== cardDiv) {
+              card.classList.remove('flipped');
+            }
+
           });
+          // Toggle 'flipped' on the clicked card
+          cardDiv.classList.toggle('flipped');
         });
       } else {
         errorMessage.textContent =
