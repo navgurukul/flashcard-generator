@@ -5,7 +5,7 @@ import { useFlashcards } from '../hooks/useFlashcards';
 export const FlashcardGenerator = () => {
   const [topic, setTopic] = useState('');
   const { getApiKey } = useApiKey();
-  const { flashcards, isGenerating, error, generateFlashcards } = useFlashcards();
+  const { flashcards, isGenerating, error, generateFlashcards, isCompleted, toggleCompleted } = useFlashcards();
 
   const handleGenerate = () => {
     const apiKey = getApiKey();
@@ -33,26 +33,51 @@ export const FlashcardGenerator = () => {
       </div>
       <div className="flashcards-container">
         {flashcards.map((flashcard, index) => (
-          <FlashcardComponent key={index} flashcard={flashcard} index={index} />
+          <FlashcardComponent 
+            key={index} 
+            flashcard={flashcard} 
+            index={index} 
+            isCompleted={isCompleted(flashcard)}
+            onToggleCompleted={() => toggleCompleted(flashcard)}
+          />
         ))}
       </div>
     </div>
   );
 };
 
-const FlashcardComponent = ({ flashcard, index }) => {
+const FlashcardComponent = ({ flashcard, index, isCompleted, onToggleCompleted }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (e) => {
+    // Don't flip if clicking on the completion checkbox
+    if (e.target.classList.contains('completion-checkbox')) {
+      return;
+    }
     setIsFlipped(!isFlipped);
+  };
+
+  const handleCompletionClick = (e) => {
+    e.stopPropagation();
+    onToggleCompleted();
   };
 
   return (
     <div 
-      className={`flashcard ${isFlipped ? 'flipped' : ''}`} 
+      className={`flashcard ${isFlipped ? 'flipped' : ''} ${isCompleted ? 'completed' : ''}`} 
       onClick={handleClick}
       data-index={index}
     >
+      <div className="completion-indicator">
+        <button 
+          className="completion-checkbox"
+          onClick={handleCompletionClick}
+          aria-label={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
+          title={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
+        >
+          {isCompleted ? '✓' : '○'}
+        </button>
+      </div>
       <div className="flashcard-inner">
         <div className="flashcard-front">
           <div className="term">{flashcard.term}</div>

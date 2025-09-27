@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const useFlashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [completedFlashcards, setCompletedFlashcards] = useState(() => {
+    // Load completed flashcards from localStorage
+    const saved = localStorage.getItem('completedFlashcards');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  // Save completed flashcards to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('completedFlashcards', JSON.stringify([...completedFlashcards]));
+  }, [completedFlashcards]);
 
   const parseFlashcardsFromText = (responseText) => {
     return responseText
@@ -93,11 +103,47 @@ export const useFlashcards = () => {
     setError('');
   };
 
+  // Generate a unique ID for each flashcard based on term and definition
+  const getFlashcardId = (flashcard) => {
+    return `${flashcard.term}:${flashcard.definition}`;
+  };
+
+  const markAsCompleted = (flashcard) => {
+    const id = getFlashcardId(flashcard);
+    setCompletedFlashcards(prev => new Set([...prev, id]));
+  };
+
+  const markAsIncomplete = (flashcard) => {
+    const id = getFlashcardId(flashcard);
+    setCompletedFlashcards(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
+  };
+
+  const isCompleted = (flashcard) => {
+    const id = getFlashcardId(flashcard);
+    return completedFlashcards.has(id);
+  };
+
+  const toggleCompleted = (flashcard) => {
+    if (isCompleted(flashcard)) {
+      markAsIncomplete(flashcard);
+    } else {
+      markAsCompleted(flashcard);
+    }
+  };
+
   return {
     flashcards,
     isGenerating,
     error,
     generateFlashcards,
-    clearFlashcards
+    clearFlashcards,
+    markAsCompleted,
+    markAsIncomplete,
+    isCompleted,
+    toggleCompleted
   };
 };

@@ -194,6 +194,51 @@ button:disabled {
   height: var(--flashcard-height);
   perspective: 1000px;
   cursor: pointer;
+  position: relative;
+}
+
+/* Completion indicator */
+.completion-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.completion-checkbox {
+  background: light-dark(var(--light-surface), var(--dark-surface));
+  border: 2px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  color: light-dark(var(--light-success), var(--dark-success));
+}
+
+.completion-checkbox:hover {
+  border-color: light-dark(var(--light-success), var(--dark-success));
+  transform: scale(1.1);
+}
+
+.flashcard.completed .completion-checkbox {
+  background: light-dark(var(--light-success), var(--dark-success));
+  border-color: light-dark(var(--light-success), var(--dark-success));
+  color: white;
+}
+
+.flashcard.completed {
+  opacity: 0.8;
+}
+
+.flashcard.completed .flashcard-front,
+.flashcard.completed .flashcard-back {
+  border-color: light-dark(var(--light-success), var(--dark-success));
 }
 
 .flashcard-inner {
@@ -254,6 +299,37 @@ button:disabled {
   font-size: 1.0em; /* Adjust size */
   color: light-dark(var(--light-button-text), var(--dark-button-text));
   line-height: 1.4; /* Adjust line height */
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: light-dark(var(--light-surface), var(--dark-surface));
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+  border-color: light-dark(var(--light-primary), var(--dark-primary));
+}
+
+.dark-mode-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px light-dark(var(--light-button-focus-shadow-color), var(--dark-button-focus-shadow-color));
 }
 
 footer {
