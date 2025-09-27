@@ -1,15 +1,25 @@
 import { useState } from 'react';
 import { useApiKey } from '../hooks/useApiKey';
 import { useFlashcards } from '../hooks/useFlashcards';
+import { useMemory } from '../hooks/useMemory';
 
 export const FlashcardGenerator = () => {
   const [topic, setTopic] = useState('');
   const { getApiKey } = useApiKey();
   const { flashcards, isGenerating, error, generateFlashcards, isCompleted, markAsCompleted } = useFlashcards();
+  const { addTopic } = useMemory();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const apiKey = getApiKey();
-    generateFlashcards(topic, apiKey);
+    await generateFlashcards(topic, apiKey);
+  };
+
+  // Save topic and flashcards when generation is complete
+  const handleSaveTopic = () => {
+    if (topic.trim() && flashcards.length > 0) {
+      addTopic(topic, flashcards);
+      alert('Topic saved to your memory!');
+    }
   };
 
   return (
@@ -31,6 +41,18 @@ export const FlashcardGenerator = () => {
       <div className="error-message">
         {error}
       </div>
+      
+      {flashcards.length > 0 && (
+        <div className="save-topic-section">
+          <button 
+            onClick={handleSaveTopic}
+            className="save-topic-btn"
+          >
+            Save Topic to Memory
+          </button>
+        </div>
+      )}
+      
       <div className="flashcards-container">
         {flashcards.map((flashcard, index) => (
           <FlashcardComponent 

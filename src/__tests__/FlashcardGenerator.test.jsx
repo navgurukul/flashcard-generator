@@ -1,10 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderWithAuth, mockUser } from './test-utils';
 import { FlashcardGenerator } from '../components/FlashcardGenerator';
+import * as useAuthModule from '../hooks/useAuth';
 
 // Mock the hooks
 const mockGetApiKey = vi.fn(() => 'test-api-key');
 const mockGenerateFlashcards = vi.fn();
+const mockAddTopic = vi.fn();
 
 vi.mock('../hooks/useApiKey', () => ({
   useApiKey: () => ({
@@ -26,13 +29,35 @@ vi.mock('../hooks/useFlashcards', () => ({
   })
 }));
 
+vi.mock('../hooks/useMemory', () => ({
+  useMemory: () => ({
+    addTopic: mockAddTopic
+  })
+}));
+
+vi.mock('../hooks/useAuth', async () => {
+  const actual = await vi.importActual('../hooks/useAuth');
+  return {
+    ...actual,
+    useAuth: vi.fn()
+  };
+});
+
 describe('FlashcardGenerator', () => {
   beforeEach(() => {
+    // Mock authenticated user
+    vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      user: mockUser,
+      loading: false,
+      logout: vi.fn(),
+      login: vi.fn(),
+      checkUser: vi.fn()
+    });
     vi.clearAllMocks();
   });
 
   it('renders generator section correctly', () => {
-    render(<FlashcardGenerator />);
+    renderWithAuth(<FlashcardGenerator />);
     
     expect(screen.getByRole('heading', { name: 'Generate Flashcards' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Enter topic/)).toBeInTheDocument();
@@ -40,7 +65,7 @@ describe('FlashcardGenerator', () => {
   });
 
   it('allows user to enter topic', () => {
-    render(<FlashcardGenerator />);
+    renderWithAuth(<FlashcardGenerator />);
     
     const textarea = screen.getByPlaceholderText(/Enter topic/);
     fireEvent.change(textarea, { target: { value: 'Spanish words' } });
@@ -49,7 +74,7 @@ describe('FlashcardGenerator', () => {
   });
 
   it('displays flashcards when available', () => {
-    render(<FlashcardGenerator />);
+    renderWithAuth(<FlashcardGenerator />);
     
     expect(screen.getByText('Hello')).toBeInTheDocument();
     expect(screen.getByText('Hola')).toBeInTheDocument();
@@ -58,7 +83,7 @@ describe('FlashcardGenerator', () => {
   });
 
   it('calls generateFlashcards when generate button is clicked', () => {
-    render(<FlashcardGenerator />);
+    renderWithAuth(<FlashcardGenerator />);
     
     const textarea = screen.getByPlaceholderText(/Enter topic/);
     const button = screen.getByRole('button', { name: 'Generate Flashcards' });
@@ -72,7 +97,7 @@ describe('FlashcardGenerator', () => {
 
 describe('FlashcardComponent', () => {
   it('flips flashcard on click', () => {
-    render(<FlashcardGenerator />);
+    renderWithAuth(<FlashcardGenerator />);
     
     const flashcard = screen.getByText('Hello').closest('.flashcard');
     expect(flashcard).not.toHaveClass('flipped');
