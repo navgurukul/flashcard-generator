@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LLMServiceFactory } from '../services/llm/index.js';
 
 export const useFlashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
@@ -33,7 +34,7 @@ export const useFlashcards = () => {
       .filter(card => card !== null); // Filter out nulls
   };
 
-  const generateFlashcards = async (topic, apiKey) => {
+  const generateFlashcards = async (topic, apiKey, serviceType = 'gemini') => {
     if (!topic.trim()) {
       setError('Please enter a topic or some terms and definitions.');
       return;
@@ -53,27 +54,13 @@ export const useFlashcards = () => {
     Hello: Hola
     Goodbye: Adiós`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+      // Create the LLM service instance
+      const llmService = LLMServiceFactory.createService(serviceType, apiKey);
+      
+      // Generate content using the LLM service
+      const data = await llmService.generate(prompt);
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt }
-              ]
-            }
-          ]
-        })
-      });
-
-      const data = await response.json();
-
-      // Extract text from the API response
+      // Extract text from the API response (standardized Gemini format)
       const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
       if (responseText) {
