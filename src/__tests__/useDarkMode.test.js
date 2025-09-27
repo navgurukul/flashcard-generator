@@ -8,7 +8,7 @@ const localStorageMock = {
   setItem: vi.fn(),
   clear: vi.fn()
 };
-global.localStorage = localStorageMock;
+globalThis.localStorage = localStorageMock;
 
 describe('useDarkMode', () => {
   beforeEach(() => {
